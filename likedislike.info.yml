@@ -1,0 +1,10 @@
+name: 'Like Dislike Buttons'
+description: 'Enable like and dislike buttons to content and comments.'
+type: module
+core: 8.x
+version: '8.x-1.x'
+package: 'Voting'
+configure: likedislike.admin
+
+dependencies:
+  - votingapi
