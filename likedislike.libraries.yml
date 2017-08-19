@@ -1,0 +1,9 @@
+likedislike-libraries:
+  version: "1.x"
+  css:
+    theme:
+      css/likedislike.css: {}
+  js:
+    js/likedislike.js: { minified: true }
+  dependencies:
+    - core/jquery

@@ -1,0 +1,5 @@
+services:
+  likedislike_subcriber:
+    class: Drupal\likedislike\EventSubscriber\LikeDislikeSubscriber
+    tags:
+      - { name: likedislike_event_subscriber }

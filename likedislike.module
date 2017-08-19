@@ -1,0 +1,146 @@
+<?php
+
+/**
+ * Implementing hook_theme().
+ *
+ * Defines the themes of the like and dislike buttons and counts
+ */
+function likedislike_theme() {
+  $theme = [
+    'like' => [
+      'variables' => [
+        'eid' => NULL,
+        'likes' => NULL,
+        'likestatus' => NULL,
+        'entity' => '',
+        'path' => NULL
+      ]
+    ],
+    'dislike' => [
+      'variables' => [
+        'eid' => NULL,
+        'likes' => NULL,
+        'likestatus' => NULL,
+        'entity' => '',
+        'path' => NULL
+      ]
+    ]
+  ];
+
+  return $theme;
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_load().
+ */
+function likedislike_comment_load($entities) {
+  global $user;
+  if (!\Drupal::currentUser()->hasPermission('view likes comment'))
+    return;
+
+  foreach ($entities as $comment) {
+    $comment->like = [
+      '#theme' => 'like',
+      '#eid' => $comment->cid,
+      '#likes' => _get_entity_vote_count($comment->cid,'like','comment'),
+      '#likestatus' => _get_entity_vote_count($comment->cid,'like','comment',$user->uid),
+      '#entity' => "entity-comment",
+      '#path' => base_path() . drupal_get_path("module", "likedislike")
+    ];
+    $comment->dislike = [
+      '#theme' => 'dislike',
+      '#eid' => $comment->cid,
+      '#dislikes' => _get_entity_vote_count($comment->cid,'dislike','comment'),
+      '#dislikestatus' => _get_entity_vote_count($comment->cid,'dislike','comment',$user->uid),
+      '#entity' => "entity-comment",
+      '#path' => base_path() . drupal_get_path("module", "likedislike")
+    ];
+  }
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_load().
+ */
+function likedislike_node_load($entities) {
+  global $user;
+  foreach ($entities as $node) {
+    $can_vote = \Drupal::currentUser()->hasPermission('like node ' . $node->type);
+    // Check the voting status based on the permission and if already voted for like or dislike as he can't repeat vote
+    if ($user->uid == 0) {
+      $ip = \Drupal::request()->getClientIp();
+      $likestatus = $can_vote ? _get_entity_vote_count($node->nid,'like','node',$user->uid, $ip):1;
+      $dislikestatus = $can_vote ? _get_entity_vote_count($node->nid,'dislike','node',$user->uid, $ip):1;
+    } else {
+      $likestatus = $can_vote ? _get_entity_vote_count($node->nid,'like','node',$user->uid):1;
+      $dislikestatus = $can_vote ? _get_entity_vote_count($node->nid,'dislike','node',$user->uid):1;
+    }
+
+    // Add the themed buttons for like/dislike
+    $node->like = [
+      '#theme' => 'like',
+      '#eid' => $node->nid,
+      '#likes' => _get_entity_vote_count($node->nid,'like','node'),
+      '#likestatus' => $likestatus,
+      '#entity' => "entity-node",
+      '#path' => base_path() . drupal_get_path("module", "likedislike")
+    ];
+    $node->dislike = [
+      '#theme' => 'dislike',
+      '#eid' => $node->nid,
+      '#dislikes' => _get_entity_vote_count($node->nid,'dislike','node'),
+      '#dislikestatus' => $dislikestatus,
+      '#entity' => "entity-node",
+      '#path' => base_path() . drupal_get_path("module", "likedislike")
+    ];
+  }
+}
+
+/**
+ * Renders the like/dislike buttons if the user has permission to see it
+ */
+function likedislike_node_view($node, $view_mode, $langcode) {
+  // Don't display the like/dislike if has no permissions to view
+  if (\Drupal::currentUser()->hasPermission('view likes ' . $node->type)) {
+    $node->content['like'] = array(
+      '#markup' => $node->like,
+      '#weight' => 10,
+    );
+    $node->content['dislike'] = array(
+      '#markup' => $node->dislike,
+      '#weight' => 11,
+    );
+  }
+  return $node;
+}
+
+/**
+ * This function gives back the number of votes for a particular entit with a particular type of voting.
+ * For example it can be used to get number of likes and also dislikes. Just need to change the type.
+ *
+ * @param type $nodeId: the node id of the node for which number of votes is requited.
+ * @param type $type: the category of vote: like/dislike etc.
+ */
+function _get_entity_vote_count($nodeId, $type, $entity, $uid=NULL, $ip=NULL) {
+  if ($uid === NULL) {
+    $criteria = array(
+      'entity_id' => $nodeId,
+      'tag' => $type,
+      'entity_type' => $entity,
+    );
+  } else {
+    $criteria = array(
+      'entity_id' => $nodeId,
+      'tag' => $type,
+      'uid' => $uid,
+      'entity_type' => $entity,
+    );
+    if ($ip != NULL) {
+      $criteria['vote_source'] = $ip;
+    }
+  }
+  $count = sizeof(\Drupal\votingapi\Entity\Vote::load($criteria));
+  if (!isset($count)) {
+    $count = 0;
+  }
+  return $count;
+}

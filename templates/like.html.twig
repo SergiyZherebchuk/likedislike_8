@@ -1,0 +1,10 @@
+<div class="like-container-{{ entity }}" id="like-container-{{ eid }}">
+    <div class="like inline float-left">
+        {% if likestatus: %}
+            <a href="javascript:;" nodeid="{{ eid }}" class="{{ entity }}"><img src="{{ path }}/images/like.gif" alt="Like" title="Like" class="{{ entity }}"></a>
+        {% else : %}
+            <a href="javascript:;" nodeid="{{ eid }}" class="disable-status {{ entity }}"><img src="{{ path }}/images/likeAct.gif" alt="Like" title="Like" class="{{ entity }}"></a>
+        {% endif %}
+    </div>
+    <div class="float-left like-count-{{ entity }}">{{ likes }}</div>
+</div>

@@ -1,0 +1,26 @@
+likedislike.admin:
+  path: '/admin/config/likedislike'
+  defaults:
+    _title: 'Manage like/dislike options.'
+    _description: 'Management options for the like and dislike buttons.'
+    _form: '\Drupal\likedislike\Form\SettingsForm'
+  requirements:
+    _permission: 'manage like dislike'
+
+likedislike.like.add:
+  path: 'likedislike/like/{entity_id}/add'
+  defaults:
+    _title: 'Add a like to the entity.'
+    _description: 'Add a vote to the node entity using voting api.'
+    _controller: '\Drupal\likedislike\Controller\EntityController::likeAdd'
+  requirements:
+    _permission: 'TRUE'
+
+likedislike.dislike.add:
+  path: 'likedislike/dislike/{entity_id}/add'
+  defaults:
+    _title: 'Add a dislike to the entity.'
+    _description: 'Add a vote to the node entity using voting api.'
+    _controller: '\Drupal\likedislike\Controller\EntityController::dislikeAdd'
+  requirements:
+    _permission: 'TRUE'

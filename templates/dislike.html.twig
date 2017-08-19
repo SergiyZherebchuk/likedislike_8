@@ -1,0 +1,11 @@
+<div class="dislike-container-{{ entity }}" id="dislike-container-{{ eid }}">
+  <div class="dislike inline float-left">
+    <?php if ($dislikestatus == 1): ?>
+    {% if dislikestatus : %}
+      <a href="javascript:;" nodeid="{{ eid }}" class="disable-status {{ entity }}"><img src="{{ path }}/images/dislikeAct.gif" alt="Dislike" title="Dislike" class="{{ entity }}"></a>
+    {% else : %}
+      <a href="javascript:;" nodeid="{{ eid }}" class="{{ entity }}"><img src="{{ path }}/images/dislike.gif" alt="Dislike" title="Dislike" class="{{ entity }}"></a>
+    {% endif %}
+  </div>
+  <div class="float-left dislike-count-{{ entity }}">{{ dislike }}</div>
+</div>

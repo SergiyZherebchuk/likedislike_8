@@ -1,0 +1,15 @@
+like comment:
+  title: 'Add like to comment'
+  description: 'Allow users to add like to the comments.'
+  restrict access: TRUE
+view likes comment:
+  title: 'View likes of comments'
+  description: 'Allow users to view likes to the comments.'
+  restrict access: TRUE
+manage like dislike:
+  title: 'Manage Like/DisLike options'
+  description: 'Manage administrative options of the like/dislike module.Manage administrative options of the like/dislike module.'
+  restrict access: TRUE
+
+permission_callbacks:
+  - Drupal\likedislike\FilterPermissions::permissions
